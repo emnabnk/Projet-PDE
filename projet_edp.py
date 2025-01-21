@@ -7,18 +7,18 @@ import time
 
 # Paramètres
 
-D = 0.05  # Coefficient de diffusion
+D = 0.5  # Coefficient de diffusion
 C = 0  #coefficient de convection
 a=0
 b=1
-n = 1000  # Nombre de points
-t_final = 10  # Temps final
+n = 500  # Nombre de points
+t_final = 0.5  # Temps final
 
 # Conditions aux limites
 u_L= 0
 u_R = 0  
 delta_x = (b - a) / (n - 1)
-gamma = 0.4
+gamma = 0.1
 nu = 0.5
 # Conditions de stabilité
 delta_t1 = gamma * delta_x**2 / D
@@ -45,7 +45,7 @@ def differences_finies (x, delta_x, delta_t, t_final, D, u_L, u_R):
         u_new = np.copy(u)
         for i in range(1, n - 1):
             u_new[i] = u[i] + D * delta_t / delta_x**2 * (u[i-1] - 2*u[i] + u[i+1])
-        u_new[0]=u_L
+        u_new[0]=u_L 
         u_new[-1] = u_R  # Conditions aux limites
         u = u_new
         u_all[t, :] = u
@@ -88,6 +88,19 @@ for i, t in enumerate([0, len(t_values)//4, len(t_values)//2, -1]):
 plt.xlabel('x')
 plt.ylabel('u(x, t)')
 plt.title('Comparaison entre solution numérique et exacte à différents instants')
+plt.legend()
+plt.grid()
+plt.show()
+
+# Plot : Comparaison spatiale
+plt.figure(figsize=(10, 6))
+for x_pos in [0, n//4, n//2, -1]:
+    plt.plot(t_values, u_numeric[:, x_pos], label=f'Numérique x={x[x_pos]:.2f}')
+    plt.plot(t_values, u_exact_all[:, x_pos], '--', label=f'Exacte x={x[x_pos]:.2f}')
+
+plt.xlabel('t')
+plt.ylabel('u(x, t)')
+plt.title('Comparaison entre solution numérique et exacte à différents points spatiaux')
 plt.legend()
 plt.grid()
 plt.show()
