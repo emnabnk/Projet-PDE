@@ -52,7 +52,7 @@ for j in range(nbrt):
 # Résolution avec différences finies
 for n in range(nbrt - 1):  # Parcours temporel
     for i in range(1, nbrx - 1):  # Parcours spatial
-        if(c>=0):
+        if(c<=0):
             solutionsApprochées[i, n + 1] =solutionsApprochées[i, n] + ht * (d * (solutionsApprochées[i + 1, n] - 2 * solutionsApprochées[i, n] + solutionsApprochées[i - 1, n]) / hx**2 - c * (solutionsApprochées[i + 1, n] - solutionsApprochées[i, n]) / hx + f(x[i],t[n]))
         else :
             solutionsApprochées[i, n + 1] =solutionsApprochées[i, n] + ht * (d * (solutionsApprochées[i + 1, n] - 2 * solutionsApprochées[i, n] + solutionsApprochées[i - 1, n]) / hx**2 - c * (solutionsApprochées[i , n] - solutionsApprochées[i-1, n]) / hx + f(x[i],t[n]))
