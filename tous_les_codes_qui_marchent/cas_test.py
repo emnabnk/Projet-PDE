@@ -2,91 +2,92 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# Paramètres
-d = 0.05# Coefficient de diffusion
-c = 0.01# Coefficient de convection
+# Initialisation de tous les paramètres
 
-#bornes intervalle
+D = 0.05# Coefficient de diffusion
+C = 0.01# Coefficient de convection
+
+# intervalle
 a = -2
 b = 2
 
-#ajustement=0.95  
-# Pas définis par l'utilisateur
-hx = 0.01# Pas en espace
-#ht = 0.5*(hx**2/d)*ajustement  # Pas en temps
+delta_x = 0.01# Pas en espace
 
 # Condition de stabilité
 gamma=0.4
 nu=0.5
-delta_t1 = gamma * (hx**2) / d 
-delta_t2= 100#nu * hx /c
-ht= min(np.abs(delta_t1),np.abs(delta_t2))
-print(ht)
-print("Ceci est un coucou")
-#print(delta_t1)
-#print(delta_t2)
+delta_t1 = gamma * (delta_x**2) / D 
+if (c!=0):
+    delta_t2= nu * delta_x /C
+else:
+    delta_t2 = 10000000
+delta_t= min(np.abs(delta_t1),np.abs(delta_t2))
+#print(f"delta_t : {delta_t}")
 
-# Définition des bornes
-Nx = b-a # Longueur de l'intervalle spatial
-Nt = 1# Durée de l'intervalle temporel
+# intervalles spatial et temporel
+intervalle_x = b-a 
+intervalle_t = 1 
 
-# Calcul du nombre de points à partir des pas
-nbrx = int(Nx / hx) + 1  # Nombre de points en espace
-nbrt = int(Nt / ht) + 1  # Nombre de points en temps
+# Calcul du nombre de points avec les pas
+nbrx = int(intervalle_x / delta_x) + 1  
+nbrt = int(intervalle_t / delta_t) + 1  
 
-# Discrétisation des axes
-x = np.linspace(a, b, nbrx)  # Vecteur spatial
-t = np.linspace(0, Nt, nbrt)  # Vecteur temporel
+# Discrétisation spatiale et temporelle
+x = np.linspace(a, b, nbrx)  
+t = np.linspace(0, intervalle_t, nbrt)  
 
-# Initialisation des solutions
-solutionsApprochées = np.zeros((nbrx, nbrt))
-solutionExacte = np.zeros((nbrx, nbrt))
+#Initialisation solutions
+sol_app = np.zeros((nbrx, nbrt))
+u_excate = np.zeros((nbrx, nbrt))
 
-# Fonction solution exacte
+#solution exacte
 def u(x, t):
     return np.sin(x) * np.exp(2*t)
 
+#calcul de la source f
 def f(x,t) :
-    return 2*np.sin(x)*np.exp(2*t) - d*np.cos(x)*np.exp(2*t) - c*np.sin(x)*np.exp(2*t)
+    return 2*np.sin(x)*np.exp(2*t) - D*np.cos(x)*np.exp(2*t) - C*np.sin(x)*np.exp(2*t)
 
-# Conditions initiales
+#Condition initiale en t=0
 for i in range(nbrx):
-    solutionsApprochées[i, 0] = u(x[i], 0)  # Condition initiale en t=0
+    sol_app[i, 0] = u(x[i], 0)  
 
+# Conditions aux limites 
 for j in range(nbrt):
-    solutionsApprochées[0, j] = u(a, t[j])  # Condition aux bords en x=0
-    solutionsApprochées[nbrx-1, j] = u(b, t[j])   # Condition aux bords en x=1
-
-# Résolution avec différences finies
-for n in range(nbrt - 1):  # Parcours temporel
-    for i in range(1, nbrx - 1):  # Parcours spatial
-        if(c<=0):
-            solutionsApprochées[i, n + 1] =solutionsApprochées[i, n] + ht * (d * (solutionsApprochées[i + 1, n] - 2 * solutionsApprochées[i, n] + solutionsApprochées[i - 1, n]) / hx**2 - c * (solutionsApprochées[i + 1, n] - solutionsApprochées[i, n]) / hx + f(x[i],t[n]))
-        else :
-            solutionsApprochées[i, n + 1] =solutionsApprochées[i, n] + ht * (d * (solutionsApprochées[i + 1, n] - 2 * solutionsApprochées[i, n] + solutionsApprochées[i - 1, n]) / hx**2 - c * (solutionsApprochées[i , n] - solutionsApprochées[i-1, n]) / hx + f(x[i],t[n]))
+    sol_app[0, j] = u(a, t[j])  # en x=a
+    sol_app[nbrx-1, j] = u(b, t[j])   # x=b
 
 # Calcul de la solution exacte
 for n in range(nbrt):
     for i in range(nbrx):
-        solutionExacte[i, n] = u(x[i], t[n])
+        u_excate[i, n] = u(x[i], t[n])
+        
+# Méthode des différences finies
+for n in range(nbrt - 1):  
+    for i in range(1, nbrx - 1):  
+        #disjonction de cas en fonction de la valeur de C
+        if(C<=0):
+            sol_app[i, n + 1] =sol_app[i, n] + delta_t * (D * (sol_app[i + 1, n] - 2 * sol_app[i, n] + sol_app[i - 1, n]) / delta_x**2 - C * (sol_app[i + 1, n] - sol_app[i, n]) / delta_x + f(x[i],t[n]))
+        else :
+            sol_app[i, n + 1] =sol_app[i, n] + delta_t * (D * (sol_app[i + 1, n] - 2 * sol_app[i, n] + sol_app[i - 1, n]) / delta_x**2 - C * (sol_app[i , n] - sol_app[i-1, n]) / delta_x + f(x[i],t[n]))
 
-erreurs2=[]
+
+
+
 # Calcul de l'écart
-
+erreurs2=[]
 for i in range(nbrx): 
-    erreur = np.abs(solutionsApprochées[i,:] - solutionExacte[i,:])
+    erreur = np.abs(sol_app[i,:] - u_excate[i,:])
     erreurs2.append
 
-# erreur = np.abs(solutionsApprochées[i,:] - solutionExacte[i,:])
-erreur2 = np.linalg.norm(solutionsApprochées - solutionExacte)/np.linalg.norm( solutionExacte)
-# # print(f"erreur :{erreur}")
-print(f"erreur2:{erreur2}")
+#calcul de l'erreur globale
+erreur_globale = np.linalg.norm(sol_app - u_excate)/np.linalg.norm( u_excate)
+print(f"erreur_globale:{erreur_globale}")
 
 # Calcul de l'erreur en fonction du temps
 erreurs = []
-erreurs1 = []
 for n in range(nbrt):
-    erreur_t = np.linalg.norm(solutionsApprochées[:,n] - solutionExacte[:,n]) / np.linalg.norm(solutionExacte[:,n])
+    erreur_t = np.linalg.norm(sol_app[:,n] - u_excate[:,n]) / np.linalg.norm(u_excate[:,n])
     erreurs.append(erreur_t)
 
 erreur3 = np.max(erreurs)   
@@ -95,7 +96,7 @@ print(f"erreur3:{erreur3}")
 
 
 # Affichage des solutions pour différents instants de temps
-def tracer_toutes_les_courbes():
+def courbes():
     plt.figure(figsize=(12, 8))
 
     # Choisir des temps spécifiques pour les tracés (5 instants uniformément répartis)
@@ -104,13 +105,13 @@ def tracer_toutes_les_courbes():
     for n in indices_temps:
         plt.plot(
             x,
-            solutionExacte[:, n],
+            u_excate[:, n],
             label=f"Solution exacte (t={t[n]:.2f})",
             linewidth=2
         )
         plt.plot(
             x,
-            solutionsApprochées[:, n],
+            sol_app[:, n],
             linestyle="--",
             label=f"Solution approchée (t={t[n]:.2f})",
             linewidth=2
@@ -124,7 +125,7 @@ def tracer_toutes_les_courbes():
     plt.show()
 
 # Tracé des courbes
-tracer_toutes_les_courbes()
+courbes()
 
 
 
@@ -139,10 +140,10 @@ plt.grid(True)
 plt.legend()
 plt.show()
 
-erreur_spatiale = np.abs(solutionsApprochées - solutionExacte)
+erreur_spatiale = np.abs(sol_app - u_excate)
 # Tracé de l'écart (carte de chaleur)
 plt.figure(figsize=(10, 6))
-plt.imshow(erreur_spatiale, extent=[0, Nt, 0, Nx], origin='lower', aspect='auto', cmap='hot')
+plt.imshow(erreur_spatiale, extent=[0, intervalle_t, 0, intervalle_x], origin='lower', aspect='auto', cmap='hot')
 plt.colorbar(label='Écart absolu')
 plt.title("Écart entre la solution approchée et la solution exacte")
 plt.xlabel("Temps (t)")
