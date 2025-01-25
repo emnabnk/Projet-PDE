@@ -39,7 +39,7 @@ t = np.linspace(0, intervalle_t, nbrt)
 
 #Initialisation solutions
 sol_app = np.zeros((nbrx, nbrt))
-u_excate = np.zeros((nbrx, nbrt))
+u_exacte = np.zeros((nbrx, nbrt))
 
 #solution exacte
 def u(x, t):
@@ -61,7 +61,7 @@ for j in range(nbrt):
 # Calcul de la solution exacte
 for n in range(nbrt):
     for i in range(nbrx):
-        u_excate[i, n] = u(x[i], t[n])
+        u_exacte[i, n] = u(x[i], t[n])
         
 # Méthode des différences finies
 for n in range(nbrt - 1):  
@@ -78,17 +78,17 @@ for n in range(nbrt - 1):
 # Calcul de l'écart
 erreurs2=[]
 for i in range(nbrx): 
-    erreur = np.abs(sol_app[i,:] - u_excate[i,:])
+    erreur = np.abs(sol_app[i,:] - u_exacte[i,:])
     erreurs2.append
 
 #calcul de l'erreur globale
-erreur_globale = np.linalg.norm(sol_app - u_excate)/np.linalg.norm( u_excate)
+erreur_globale = np.linalg.norm(sol_app - u_exacte)/np.linalg.norm( u_exacte)
 print(f"erreur_globale:{erreur_globale}")
 
 # Calcul de l'erreur en fonction du temps
 erreurs = []
 for n in range(nbrt):
-    erreur_t = np.linalg.norm(sol_app[:,n] - u_excate[:,n]) / np.linalg.norm(u_excate[:,n])
+    erreur_t = np.linalg.norm(sol_app[:,n] - u_exacte[:,n]) / np.linalg.norm(u_exacte[:,n])
     erreurs.append(erreur_t)
 
 erreur3 = np.max(erreurs)   
@@ -106,7 +106,7 @@ def courbes():
     for n in indices_temps:
         plt.plot(
             x,
-            u_excate[:, n],
+            u_exacte[:, n],
             label=f"Solution exacte (t={t[n]:.2f})",
             linewidth=2
         )
@@ -141,7 +141,7 @@ plt.grid(True)
 plt.legend()
 plt.show()
 
-erreur_spatiale = np.abs(sol_app - u_excate)
+erreur_spatiale = np.abs(sol_app - u_exacte)
 # Tracé de l'écart (carte de chaleur)
 plt.figure(figsize=(10, 6))
 plt.imshow(erreur_spatiale, extent=[0, intervalle_t, 0, intervalle_x], origin='lower', aspect='auto', cmap='hot')
