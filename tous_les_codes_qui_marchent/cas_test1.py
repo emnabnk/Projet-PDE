@@ -1,8 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+############## ETUDE DE LA FONCTION : u_exacte = (1+t)*sin(pi*x) ###########
 
-# Paramètres
+# Initialisation de tous les paramètres
 D = 0.5# Coefficient de diffusion
 C = 0.1# Coefficient de convection
 
@@ -42,7 +43,7 @@ u_exacte = np.zeros((nbrx, nbrt))
 
 # solution exacte
 def u(x, t):
-    return np.sin(np.pi * x) * (1 + t)
+    return (1+t) * np.sin(np.pi * x) 
 
 #calcul de la source f
 def f(x,t) :
