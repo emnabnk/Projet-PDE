@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+############ ETUDE DE LA FONCTION : u_exacte = sin(x)*exp(2t) ############
 
 # Initialisation de tous les paramètres
 
