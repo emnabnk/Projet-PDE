@@ -21,6 +21,7 @@ if (c!=0):
     delta_t2= nu * delta_x /C
 else:
     delta_t2 = 10000000
+#on recupere le plus petit delta_t
 delta_t= min(np.abs(delta_t1),np.abs(delta_t2))
 #print(f"delta_t : {delta_t}")
 
