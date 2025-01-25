@@ -1,10 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+######## ETUDE DE L'EQUATION DE LA CHALEUR (C = 0) : nsin(2pix) * exp(-4 pi**2 * D * t ) ##########
 # PARAMETRES 
 a = 0
 b = 1
-K = 0.5  # coefficient de diffusion
+D = 0.5  # coefficient de diffusion
 L = 1
 Time = 0.1
 NX = 100  # Discrétisation espace
@@ -16,14 +17,14 @@ u_R = 0
 delta_x = L / (NX - 1)
 delta_t = Time / NT
 
-C = delta_t * K / (delta_x**2)
+C = delta_t * D / (delta_x**2)
 
 # Initialisation
 x = np.linspace(a, b, NX)
 T = np.sin(2 * np.pi * x)
 u = np.zeros((NX))
 # Solution exacte
-Texact = np.sin(2 * np.pi * x) * np.exp(-4 * np.pi**2 * K * Time)
+Texact = np.sin(2 * np.pi * x) * np.exp(-4 * np.pi**2 * D * Time)
 
 for n in range(0, NT):
     for j in range(1, NX - 1):
