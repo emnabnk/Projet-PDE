@@ -75,12 +75,6 @@ for n in range(nbrt - 1):
 
 
 
-# Calcul de l'écart
-erreurs2=[]
-for i in range(nbrx): 
-    erreur = np.abs(sol_app[i,:] - u_exacte[i,:])
-    erreurs2.append
-
 #calcul de l'erreur globale
 erreur_globale = np.linalg.norm(sol_app - u_exacte)/np.linalg.norm( u_exacte)
 print(f"erreur_globale:{erreur_globale}")
@@ -94,6 +88,11 @@ for n in range(nbrt):
 erreur3 = np.max(erreurs)   
 print(f"erreur3:{erreur3}")  
 
+# Calcul de l'erreur en fonction de x
+erreurs2=[]
+for i in range(nbrx): 
+    erreur = np.abs(sol_app[i,:] - u_exacte[i,:])
+    erreurs2.append
 
 
 # Affichage des solutions pour différents instants de temps
